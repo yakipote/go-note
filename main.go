@@ -9,19 +9,24 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-const NoteBook string = "/home/bun/Documents/"
+const NoteBook string = "/home/bun/Documents/go-note/"
 func main() {
 	app := &cli.App{
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "new",
-				Usage:   "new file",
+				Usage:   "new page",
 				Aliases: []string{"n"},
 			},
 			&cli.StringFlag{
 				Name:  "edit",
-				Usage: "edit file",
+				Usage: "edit page",
 				Aliases: []string{"e"},
+			},
+			&cli.BoolFlag{
+				Name:  "list",
+				Usage: "list pages",
+				Aliases: []string{"l"},
 			},
 		},
 		//Action: func(c *cli.Context) error {
@@ -47,6 +52,12 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
+	listFlg := c.Bool("list")
+	if listFlg {
+		o,_ := exec.Command("ls",NoteBook).Output()
+		os.Stdout.Write(o)
+		return nil
+	}
 	fileName := c.Args().Get(0)
 	fmt.Printf("go-note\n")
 	cmd := exec.Command("/usr/bin/vim", NoteBook + fileName)
