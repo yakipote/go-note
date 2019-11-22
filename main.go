@@ -59,8 +59,12 @@ func appRun(c *cli.Context) error {
 		return nil
 	}
 	fileName := c.Args().Get(0)
+	// ファイルが指定されているかチェック
+	if fileName == "" {
+		return fmt.Errorf("no filename")
+	}
 	fmt.Printf("go-note\n")
-	cmd := exec.Command("/usr/bin/vim", NoteBook + fileName)
+	cmd := exec.Command("/usr/bin/:wvim", NoteBook + fileName)
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Stdin = os.Stdin
