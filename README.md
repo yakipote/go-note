@@ -1,1 +1,1 @@
-# go-memo
+# go-note
