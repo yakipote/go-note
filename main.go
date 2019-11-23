@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
+	"go-note/storage"
+	"io/ioutil"
+	"os/exec"
+
 	"log"
 	"os"
-	"os/exec"
 
 	"github.com/urfave/cli/v2"
 )
 
-const NoteBook string = "/home/bun/Documents/go-note/"
 func main() {
 	app := &cli.App{
 		Flags: []cli.Flag{
@@ -19,28 +21,16 @@ func main() {
 				Aliases: []string{"n"},
 			},
 			&cli.StringFlag{
-				Name:  "edit",
-				Usage: "edit page",
+				Name:    "edit",
+				Usage:   "edit page",
 				Aliases: []string{"e"},
 			},
 			&cli.BoolFlag{
-				Name:  "list",
-				Usage: "list pages",
+				Name:    "list",
+				Usage:   "list pages",
 				Aliases: []string{"l"},
 			},
 		},
-		//Action: func(c *cli.Context) error {
-		//	name := "someone"
-		//	if c.NArg() > 0 {
-		//		name = c.Args().Get(0)
-		//	}
-		//	if language == "spanish" {
-		//		fmt.Println("Hola", name)
-		//	} else {
-		//		fmt.Println("Hello", name)
-		//	}
-		//	return nil
-		//},
 		Action: appRun,
 	}
 
@@ -52,27 +42,54 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
-	listFlg := c.Bool("list")
-	if listFlg {
-		o,_ := exec.Command("ls",NoteBook).Output()
-		os.Stdout.Write(o)
-		return nil
-	}
+	//listFlg := c.Bool("list")
+	//if listFlg {
+	//	o, _ := exec.Command("ls", NoteBook).Output()
+	//	os.Stdout.Write(o)
+	//	return nil
+	//}
+
 	fileName := c.Args().Get(0)
 	// ファイルが指定されているかチェック
 	if fileName == "" {
 		return fmt.Errorf("no filename")
 	}
-	fmt.Printf("go-note\n")
-	cmd := exec.Command("vim", NoteBook + fileName)
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	cmd.Stdin = os.Stdin
-	err := cmd.Run()
+
+	// make tmp file
+	fp := "./tmp/" + fileName
+	err := ioutil.WriteFile(fp, []byte(""), 0664)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return err
 	}
-	fmt.Printf("go-note\n")
+	fmt.Printf("open tmp file")
+	defer func() {
+		err = os.Remove(fp)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
+		fmt.Printf("delete tmp file")
+	}()
+
+	fmt.Printf("open editer\n")
+	cmd := exec.Command("vim", fp)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	err = cmd.Run()
+	if err != nil {
+		fmt.Printf(err.Error())
+		return err
+	}
+
+	fmt.Printf("close editer\n")
+	content, _ := os.Open(fp)
+	defer func() {
+		err = content.Close()
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
+	}()
+	storage.Upload(content)
 	return nil
 }
