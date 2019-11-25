@@ -4,6 +4,8 @@ import (
 	"cloud.google.com/go/storage"
 	"context"
 	firebase "firebase.google.com/go"
+	"fmt"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"io"
 	"log"
@@ -58,7 +60,21 @@ func Upload(file *os.File) {
 		log.Fatalln(err)
 	}
 }
-
+func List() error{
+	ctx := context.Background()
+	it := bucket.Objects(ctx, nil)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		fmt.Println(attrs.Name)
+	}
+	return nil
+}
 // file download
 //rc, err := bucket.Object(remoteFilename).NewReader(ctx)
 //if err != nil {
@@ -74,14 +90,4 @@ func Upload(file *os.File) {
 //log.Printf("Downloaded contents: %v\n", string(data))
 //
 //// get file list
-//it := bucket.Objects(ctx, nil)
-//for {
-//	attrs, err := it.Next()
-//	if err == iterator.Done {
-//		break
-//	}
-//	if err != nil {
-//		return err
-//	}
-//	fmt.Printf(attrs.Name)
-//}
+

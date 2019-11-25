@@ -42,12 +42,13 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
-	//listFlg := c.Bool("list")
-	//if listFlg {
-	//	o, _ := exec.Command("ls", NoteBook).Output()
-	//	os.Stdout.Write(o)
-	//	return nil
-	//}
+	listFlg := c.Bool("list")
+	if listFlg {
+		if err := storage.List(); err != nil {
+			return err
+		}
+		return nil
+	}
 
 	fileName := c.Args().Get(0)
 	// ファイルが指定されているかチェック
