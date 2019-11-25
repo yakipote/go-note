@@ -42,6 +42,7 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
+	// display file list
 	listFlg := c.Bool("list")
 	if listFlg {
 		if err := storage.List(); err != nil {
@@ -50,15 +51,25 @@ func appRun(c *cli.Context) error {
 		return nil
 	}
 
-	fileName := c.Args().Get(0)
-	// ファイルが指定されているかチェック
-	if fileName == "" {
-		return fmt.Errorf("no filename")
+
+
+	// edit
+	fileName := c.String("edit")
+	data := []byte("")
+	if fileName != "" {
+		fmt.Println("edit file")
+		data = storage.Download(fileName)
+	}else{
+		fileName = c.Args().Get(0)
+		// ファイルが指定されているかチェック
+		if fileName == "" {
+			return fmt.Errorf("no filename")
+		}
 	}
 
 	// make tmp file
 	fp := "./tmp/" + fileName
-	err := ioutil.WriteFile(fp, []byte(""), 0664)
+	err := ioutil.WriteFile(fp, data, 0664)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return err

@@ -8,6 +8,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -75,19 +76,20 @@ func List() error{
 	}
 	return nil
 }
-// file download
-//rc, err := bucket.Object(remoteFilename).NewReader(ctx)
-//if err != nil {
-//	log.Fatalln(err)
-//}
-//defer rc.Close()
-//
-//data, err := ioutil.ReadAll(rc)
-//if err != nil {
-//	log.Fatalln(err)
-//}
-//
-//log.Printf("Downloaded contents: %v\n", string(data))
-//
-//// get file list
+
+func Download(fileName string) []byte{
+	ctx := context.Background()
+	rc, err := bucket.Object(fileName).NewReader(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer rc.Close()
+
+	data, err := ioutil.ReadAll(rc)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Downloaded contents: %v\n", string(data))
+	return data
+}
 
