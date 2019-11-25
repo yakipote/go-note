@@ -89,7 +89,6 @@ func Download(fileName string) []byte{
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Downloaded contents: %v\n", string(data))
 	return data
 }
 

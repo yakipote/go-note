@@ -51,15 +51,13 @@ func appRun(c *cli.Context) error {
 		return nil
 	}
 
-
-
 	// edit
 	fileName := c.String("edit")
 	data := []byte("")
 	if fileName != "" {
 		fmt.Println("edit file")
 		data = storage.Download(fileName)
-	}else{
+	} else {
 		fileName = c.Args().Get(0)
 		// ファイルが指定されているかチェック
 		if fileName == "" {
