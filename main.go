@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"go-note/storage"
 	"io/ioutil"
 	"os/exec"
@@ -11,6 +12,26 @@ import (
 
 	"github.com/urfave/cli/v2"
 )
+
+type Config struct {
+	Firebase FirebaseConfig
+}
+
+type FirebaseConfig struct {
+	KeyPath       string
+	StorageBucket string
+}
+
+var config Config
+
+func init() {
+	// read config file
+	_, err := toml.DecodeFile("./config.toml", &config)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	storage.InitStorage(config.Firebase.KeyPath, config.Firebase.StorageBucket)
+}
 
 func main() {
 	app := &cli.App{
@@ -78,7 +99,7 @@ func appRun(c *cli.Context) error {
 		if err != nil {
 			fmt.Printf(err.Error())
 		}
-		fmt.Printf("delete tmp file")
+		fmt.Println("delete tmp file")
 	}()
 
 	fmt.Printf("open editer\n")

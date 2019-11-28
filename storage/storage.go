@@ -16,12 +16,12 @@ import (
 
 var bucket *storage.BucketHandle
 
-func init() {
+func InitStorage(credentialFilePath string, storageBucket string) {
 	// firebase 初期化
 	config := &firebase.Config{
-		StorageBucket: "go-note-f24e2.appspot.com",
+		StorageBucket: storageBucket,
 	}
-	opt := option.WithCredentialsFile("./keys/server-account.json")
+	opt := option.WithCredentialsFile(credentialFilePath)
 	app, err := firebase.NewApp(context.Background(), config, opt)
 	if err != nil {
 		log.Fatalln(err)
@@ -61,7 +61,7 @@ func Upload(file *os.File) {
 		log.Fatalln(err)
 	}
 }
-func List() error{
+func List() error {
 	ctx := context.Background()
 	it := bucket.Objects(ctx, nil)
 	for {
@@ -77,7 +77,7 @@ func List() error{
 	return nil
 }
 
-func Download(fileName string) []byte{
+func Download(fileName string) []byte {
 	ctx := context.Background()
 	rc, err := bucket.Object(fileName).NewReader(ctx)
 	if err != nil {
@@ -91,4 +91,3 @@ func Download(fileName string) []byte{
 	}
 	return data
 }
-
