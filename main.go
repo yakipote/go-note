@@ -14,12 +14,7 @@ import (
 )
 
 type Config struct {
-	Firebase FirebaseConfig
-}
-
-type FirebaseConfig struct {
-	KeyPath       string
-	StorageBucket string
+	Firebase storage.Config
 }
 
 var config Config
@@ -30,7 +25,7 @@ func init() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	storage.InitStorage(config.Firebase.KeyPath, config.Firebase.StorageBucket)
+	storage.InitStorage(config.Firebase)
 }
 
 func main() {

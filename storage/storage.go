@@ -16,13 +16,18 @@ import (
 
 var bucket *storage.BucketHandle
 
-func InitStorage(credentialFilePath string, storageBucket string) {
+type Config struct {
+	KeyPath       string
+	StorageBucket string
+}
+
+func InitStorage(config Config) {
 	// firebase 初期化
-	config := &firebase.Config{
-		StorageBucket: storageBucket,
+	firebaseConfig := &firebase.Config{
+		StorageBucket: config.StorageBucket,
 	}
-	opt := option.WithCredentialsFile(credentialFilePath)
-	app, err := firebase.NewApp(context.Background(), config, opt)
+	opt := option.WithCredentialsFile(config.KeyPath)
+	app, err := firebase.NewApp(context.Background(), firebaseConfig, opt)
 	if err != nil {
 		log.Fatalln(err)
 	}
