@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
-	"go-note/storage"
+	"gostnote/storage"
 	"io/ioutil"
 	"os/exec"
 
