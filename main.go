@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"gostnote/storage"
+	"gostnote/termbox"
 	"io/ioutil"
 	"os/exec"
 
@@ -58,6 +59,10 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
+	t := termbox.NewTermbox()
+	t.Init()
+	t.Display()
+	panic("hoge")
 	// display file list
 	listFlg := c.Bool("list")
 	if listFlg {
