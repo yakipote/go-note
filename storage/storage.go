@@ -82,6 +82,23 @@ func List() error {
 	return nil
 }
 
+func GetFileList() ([]string,error) {
+	list := []string{}
+	ctx := context.Background()
+	it := bucket.Objects(ctx, nil)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil,err
+		}
+		list = append(list, attrs.Name)
+	}
+	return list,nil
+}
+
 func Download(fileName string) []byte {
 	ctx := context.Background()
 	rc, err := bucket.Object(fileName).NewReader(ctx)

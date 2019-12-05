@@ -12,6 +12,8 @@ type Termbox struct {
 	Height               int
 	SearchFormHeight     int
 	CommandHistoryHeight int
+	SelectionFile        string
+	FileList             []string
 	Filter
 }
 
@@ -27,9 +29,10 @@ func (f *Filter) Append(c rune) {
 	f.SearchQuery = append(f.SearchQuery, c)
 }
 
-func NewTermbox() *Termbox {
+func NewTermbox(fileList []string) *Termbox {
 	return &Termbox{
 		Filter: NewFilter(),
+		FileList:fileList,
 	}
 }
 
@@ -80,10 +83,11 @@ func (t *Termbox) Draw() {
 	displaySearchForm := "QUERY>"
 	t.Print(0, 0, termbox.ColorWhite, termbox.ColorDefault, displaySearchForm)
 	t.PrintSearchQuery(len(displaySearchForm), 0, termbox.ColorWhite, termbox.ColorDefault)
-	commandHistory := []string{"aaaa", "bbbb"}
+	commandHistory := t.FileList
 
 	if len(t.Filter.SearchQuery) != 0 {
 		commandHistory = t.Filter.FilterResult(commandHistory)
+		t.SelectionFile = commandHistory[0]
 	}
 
 	// commandHistoryを順番に表示
@@ -119,13 +123,16 @@ loop:
 					t.Filter.SearchQuery = t.Filter.SearchQuery[:len(t.Filter.SearchQuery)-1]
 				}
 			case termbox.KeyEnter:
+				if len(t.SelectionFile) == 0 {
+					continue
+				}
+				break loop
 			default:
 				if ev.Ch != 0 {
 					t.Filter.Append(ev.Ch)
 				}
 			}
 		}
-
 		t.Draw()
 	}
 }

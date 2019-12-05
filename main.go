@@ -59,10 +59,8 @@ func main() {
 }
 
 func appRun(c *cli.Context) error {
-	t := termbox.NewTermbox()
-	t.Init()
-	t.Display()
-	panic("hoge")
+
+
 	// display file list
 	listFlg := c.Bool("list")
 	if listFlg {
@@ -80,10 +78,19 @@ func appRun(c *cli.Context) error {
 		data = storage.Download(fileName)
 	} else {
 		fileName = c.Args().Get(0)
-		// ファイルが指定されているかチェック
-		if fileName == "" {
-			return fmt.Errorf("no filename")
+	}
+
+	// no flag no args
+	if c.NumFlags() == 0 && c.Args().Len() == 0{
+		list,err := storage.GetFileList()
+		if err != nil {
+			return err
 		}
+		t := termbox.NewTermbox(list)
+		t.Init()
+		t.Display()
+		fileName = t.SelectionFile
+		data = storage.Download(fileName)
 	}
 
 	// make tmp file
