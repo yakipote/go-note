@@ -87,7 +87,11 @@ func (t *Termbox) Draw() {
 
 	if len(t.Filter.SearchQuery) != 0 {
 		commandHistory = t.Filter.FilterResult(commandHistory)
-		t.SelectionFile = commandHistory[0]
+		if len(commandHistory) > 0{
+			t.SelectionFile = commandHistory[0]
+		}else {
+			t.SelectionFile = ""
+		}
 	}
 
 	// commandHistoryを順番に表示
